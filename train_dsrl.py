@@ -134,7 +134,8 @@ def main(cfg: OmegaConf):
 
 	checkpoint_callback = CheckpointCallback(
 		save_freq=cfg.save_model_interval, 
-		save_path=cfg.logdir+'/checkpoint/',
+		# save_path=cfg.logdir+'/checkpoint/',
+		save_path=cfg.checkpoint_path+'/checkpoint/',
 		name_prefix='ft_policy',
 		save_replay_buffer=cfg.save_replay_buffer, 
 		save_vecnormalize=True,

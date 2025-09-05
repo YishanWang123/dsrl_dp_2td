@@ -11,7 +11,7 @@ offline_data_path: ./dppo/log/robomimic/can_test/train_offline.npz
 dppo_path: ./dppo
 normalization_path: ./dppo/log/robomimic/${env_name}/normalization.npz
 
-algorithm: dsrl_na # options are: dsrl_na, dsrl_sac
+algorithm: dsrl_sac # options are: dsrl_na, dsrl_sac
 
 seed: 1
 device: cuda:0
@@ -24,6 +24,7 @@ cond_steps: 1
 act_steps: 4 # action chunk size of base policy
 load_offline_data: False # if true, load offline demonstration data into replay buffer
 deterministic_eval: False # if true, run eval with both deterministic actions, as well as stochastic
+checkpoint_path: /data1/wys/dppo/log/robomimic-dsrl/${name}/${now:%Y-%m-%d}_${now:%H-%M-%S}_${seed}
 
 eval_interval: 3000
 num_evals: 200
