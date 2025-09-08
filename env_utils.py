@@ -210,29 +210,50 @@ class DiffusionPolicyEnvWrapper(VecEnvWrapper):
 		self.device = cfg.model.device
 		self.base_policy = base_policy
 		self.obs = None
+		#residual getter
+		self.residual_getter = None
+		
+	def set_residual_getter(self, fn):
+
+		self.residual_getter = fn
 
 	def step_async(self, actions):
 		actions = torch.tensor(actions, device=self.device, dtype=torch.float32)
-		# print(actions.shape)
-		# import pdb; pdb.set_trace()
-		n_envs = actions.shape[0]
+		B = actions.shape[0] #num_env
 		H, A = self.action_horizon, self.action_dim
 		expect_ha = H * A
-		if actions.shape == (n_envs, H, A):
-			actions = actions.view(n_envs, expect_ha)
-		if actions.shape[1] == expect_ha:
-			noise = actions.view(n_envs, H, A)
-			res = torch.zeros_like(noise)
-		elif actions.shape[1] == 2 * expect_ha:
-			actions = actions.view(n_envs, 2, H, A)
-			noise = actions[:, 0, :, :]
-			res   = actions[:, 1, :, :]
+
+		if actions.shape == (B, H, A):
+			noise = actions
+		elif actions.shape == (B, H * A):
+			noise = actions.view(B, H, A)
 		else:
-			raise ValueError(f"Unexpected action shape {tuple(actions.shape)}; expect {expect_ha} or {2*expect_ha}")
+			raise ValueError(
+                f"Unexpected action shape {tuple(actions.shape)}; "
+                f"expect {(B, H*A)} or {(B, H, A)}"
+            )
 		# DP(noise) -> norm
-		# print(noise.shape, res.shape)
-		res = res.detach().cpu().numpy()
 		norm_action = self.base_policy(self.obs, noise) # num_env * H * A
+		if self.residual_getter is not None:
+			# print("using residual")
+			with torch.no_grad():
+				res = self.residual_getter(self.obs)  # torch[B,H,A]
+                # 保守起见，确保 shape 匹配
+				if res.shape != norm_action.shape:
+					raise RuntimeError(
+                        f"residual_getter returned {tuple(res.shape)}, "
+                        f"but expected {tuple(norm_action.shape)}"
+                    )
+		else:
+			res = torch.zeros_like(noise)
+		# print(f"norm_action shape:{norm_action.shape},norm_action dtype:{norm_action.dtype} ,res shape:{res.shape} ")
+		# import pdb; pdb.set_trace()
+		if isinstance(res, torch.Tensor):
+			res = res.detach().cpu().numpy()
+		else:
+			res = np.asarray(res)
+		res = res.astype(np.float32, copy=False)
+
 		actual_norm_action = norm_action + res #res_coef TBD
 
 		#store for add buffer

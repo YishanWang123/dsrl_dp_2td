@@ -82,6 +82,7 @@ def main(cfg: OmegaConf):
 		n_critics=cfg.train.n_critics,
 	)
 	if cfg.algorithm == 'dsrl_sac':
+		# model._bind_residual_getter(eval_env)
 		model = SAC(
 			"MlpPolicy",
 			env,
@@ -145,6 +146,7 @@ def main(cfg: OmegaConf):
 	eval_env = make_vec_env(make_env, n_envs=num_env_eval, vec_env_cls=SubprocVecEnv)
 	if cfg.algorithm == 'dsrl_sac':
 		eval_env = DiffusionPolicyEnvWrapper(eval_env, cfg, base_policy)
+		model._bind_residual_getter(eval_env) 
 	eval_env.seed(cfg.seed + num_env + 1) 
 
 	logging_callback = LoggingCallback(

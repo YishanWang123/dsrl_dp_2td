@@ -9,11 +9,11 @@ export WANDB_BASE_URL=https://api.bandw.top
 #   仅单任务： ./run_dsrl.sh lift
 
 # ========== 可配置路径 ==========
-BASE_DIR="/data1/wys/dppo/log"
+BASE_DIR="/mnt/ssd1/data/wys/dppo/log"
 
 # ========== 解析参数 ==========
 PARALLEL=0
-GPUS=("1")     # 默认只有一张卡
+GPUS=("0")     # 默认只有一张卡
 
 ARGS=()
 while (( "$#" )); do
