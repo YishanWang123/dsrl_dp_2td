@@ -213,12 +213,42 @@ class DiffusionPolicyEnvWrapper(VecEnvWrapper):
 
 	def step_async(self, actions):
 		actions = torch.tensor(actions, device=self.device, dtype=torch.float32)
-		actions = actions.view(-1, self.action_horizon, self.action_dim)
-		diffused_actions = self.base_policy(self.obs, actions)
-		self.venv.step_async(diffused_actions)
+		# print(actions.shape)
+		# import pdb; pdb.set_trace()
+		n_envs = actions.shape[0]
+		H, A = self.action_horizon, self.action_dim
+		expect_ha = H * A
+		if actions.shape == (n_envs, H, A):
+			actions = actions.view(n_envs, expect_ha)
+		if actions.shape[1] == expect_ha:
+			noise = actions.view(n_envs, H, A)
+			res = torch.zeros_like(noise)
+		elif actions.shape[1] == 2 * expect_ha:
+			actions = actions.view(n_envs, 2, H, A)
+			noise = actions[:, 0, :, :]
+			res   = actions[:, 1, :, :]
+		else:
+			raise ValueError(f"Unexpected action shape {tuple(actions.shape)}; expect {expect_ha} or {2*expect_ha}")
+		# DP(noise) -> norm
+		# print(noise.shape, res.shape)
+		res = res.detach().cpu().numpy()
+		norm_action = self.base_policy(self.obs, noise) # num_env * H * A
+		actual_norm_action = norm_action + res #res_coef TBD
+
+		#store for add buffer
+		self._curr_norm_action = norm_action
+		self._curr_actual_norm_action = actual_norm_action
+		self.venv.step_async(actual_norm_action)
+
 
 	def step_wait(self):
 		obs, rewards, dones, infos = self.venv.step_wait()
+		if hasattr(self, "_curr_norm_action"):
+			for i in range(len(infos)):
+				infos[i]["norm_action"] = self._curr_norm_action[i]
+				infos[i]["actual_norm_action"] = self._curr_actual_norm_action[i]
+			del self._curr_norm_action
+			del self._curr_actual_norm_action
 		self.obs = torch.tensor(obs, device=self.device, dtype=torch.float32)
 		obs_out = self.obs
 		return obs_out.detach().cpu().numpy(), rewards, dones, infos
