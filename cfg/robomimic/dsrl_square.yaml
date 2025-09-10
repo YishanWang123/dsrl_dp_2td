@@ -11,19 +11,20 @@ offline_data_path: ./dppo/log/robomimic/square_traj_data/train_offline.npz
 normalization_path: ./dppo/log/robomimic/${env_name}/normalization.npz
 dppo_path: ./dppo
 
-algorithm: dsrl_na
+algorithm: dsrl_sac
 
 seed: 1
 device: cuda:0
 use_wandb: True
 env_name: square
 log_dir: ./logs 
-obs_dim: 23
+obs_dim: 31
 action_dim: 7
-cond_steps: 1
+cond_steps: 4
 act_steps: 4
 load_offline_data: False
 deterministic_eval: False
+checkpoint_path: /mnt/ssd1/data/wys/dppo/log/robomimic-dsrl/${name}/${now:%Y-%m-%d}_${now:%H-%M-%S}_${seed}
 
 eval_interval: 4000
 num_evals: 200
@@ -74,6 +75,8 @@ train:
   action_magnitude: 1.5 # Maximum action magnitude in noise action space
   n_critics: 2 # Number of critic Q networks
   critic_backup_combine_type: min
+  res_coef: 1 # residual coef for SAC actor
+  learning_starts: 600 # Number of steps before training starts
 
 model:
   _target_: model.diffusion.diffusion_eval.DiffusionEval

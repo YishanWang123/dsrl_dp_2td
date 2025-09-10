@@ -66,6 +66,10 @@ class LoggingCallback(BaseCallback):
 		self.deterministic_eval = deterministic_eval
 
 	def _on_step(self):
+		# for reward, done in zip(self.locals['rewards'], self.locals['dones']):
+		# 	print(f"[Train-Debug Step] reward={reward}, done={done}")
+
+
 		for info in self.locals['infos']:
 			if 'episode' in info:
 				self.episode_rewards.append(info['episode']['r'])
@@ -89,6 +93,10 @@ class LoggingCallback(BaseCallback):
 						"train/actor_loss": self.locals['self'].logger.name_to_value['train/actor_loss'],
 						"train/critic_loss": self.locals['self'].logger.name_to_value['train/critic_loss'],
 						"train/ent_coef_loss": self.locals['self'].logger.name_to_value['train/ent_coef_loss'],
+						"train/res_actor_loss": self.locals['self'].logger.name_to_value.get('train/res_actor_loss', np.nan),
+    					"train/clean_critic_loss": self.locals['self'].logger.name_to_value.get('train/clean_critic_loss', np.nan),
+						"train/clean_q_pi": self.locals['self'].logger.name_to_value.get('train/clean_q_pi', np.nan),
+						"train/target_clean_q": self.locals['self'].logger.name_to_value.get('train/target_clean_q', np.nan),
 					}, step=self.log_count)
 					if np.sum(self.episode_completed) > 0:
 						wandb.log({
@@ -127,6 +135,8 @@ class LoggingCallback(BaseCallback):
 						elif self.algorithm == 'dsrl_na':
 							action, _ = agent.predict_diffused(obs, deterministic=deterministic)
 						next_obs, reward, done, info = env.step(action)
+						# print("INFO KEYS:", list(info[0].keys()))
+						# import pdb; pdb.set_trace()
 						obs = next_obs
 						rew_ep += reward
 						rew_total += sum(rew_ep[done])

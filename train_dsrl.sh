@@ -3,6 +3,8 @@ set -euo pipefail
 export MUJOCO_GL=egl
 export WANDB_BASE_URL=https://api.bandw.top
 
+#TBD: 做一个res_actor独立extractor的版本
+
 # 用法示例：
 #   顺序跑： ./run_dsrl.sh lift can
 #   并行跑（GPU0,1）： ./run_dsrl.sh --parallel --gpus 0,1 lift can square transport
@@ -50,7 +52,7 @@ resolve_paths() {
       NORMALIZATION_PATH="$BASE_DIR/robomimic/can/normalization.npz"
       ;;
     square)
-      BASE_POLICY_PATH="$BASE_DIR/robomimic-pretrain/square/square_pre_diffusion_mlp_ta4_td20/2024-06-28_14-49-03/checkpoint/state_5000.pt"
+      BASE_POLICY_PATH="$BASE_DIR/robomimic-pretrain/square/square_pre_diffusion_mlp_ta4_td100_ddim-100steps/2025-04-11_19-13-26_44/checkpoint/state_3000.pt"
       NORMALIZATION_PATH="$BASE_DIR/robomimic/square/normalization.npz"
       ;;
     transport)
@@ -95,7 +97,7 @@ run_task() {
     env_name="$task" \
     base_policy_path="$BASE_POLICY_PATH" \
     normalization_path="$NORMALIZATION_PATH" \
-    use_wandb=False
+    use_wandb=True
 }
 
 # ========== 顺序 or 并行调度 ==========

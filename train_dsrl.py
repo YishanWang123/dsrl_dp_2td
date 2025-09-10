@@ -88,7 +88,7 @@ def main(cfg: OmegaConf):
 			env,
 			learning_rate=cfg.train.actor_lr,
 			buffer_size=20000000,      # Replay buffer size
-			learning_starts=1,    # How many steps before learning starts (total steps for all env combined)
+			learning_starts=cfg.train.learning_starts,    # How many steps before learning starts (total steps for all env combined)
 			batch_size=cfg.train.batch_size,
 			tau=cfg.train.tau,                # Target network update rate
 			gamma=cfg.train.discount,               # Discount factor
@@ -104,6 +104,7 @@ def main(cfg: OmegaConf):
 			tensorboard_log=cfg.logdir,
 			verbose=1,
 			policy_kwargs=policy_kwargs,
+			res_coef=cfg.train.res_coef,
 		)
 	elif cfg.algorithm == 'dsrl_na':
 		model = DSRL(
@@ -111,7 +112,7 @@ def main(cfg: OmegaConf):
 			env,
 			learning_rate=cfg.train.actor_lr,
 			buffer_size=10000000,      # Replay buffer size
-			learning_starts=1,    # How many steps before learning starts (total steps for all env combined)
+			learning_starts=cfg.train.learning_starts,    # How many steps before learning starts (total steps for all env combined)
 			batch_size=cfg.train.batch_size,
 			tau=cfg.train.tau,                # Target network update rate
 			gamma=cfg.train.discount,               # Discount factor

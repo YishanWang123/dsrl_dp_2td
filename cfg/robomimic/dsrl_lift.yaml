@@ -10,7 +10,7 @@ base_policy_path: ./dppo/log/robomimic-pretrain/lift/lift_pre_diffusion_mlp_ta4_
 normalization_path: ./dppo/log/robomimic/${env_name}/normalization.npz
 dppo_path: ./dppo
 
-algorithm: dsrl_na
+algorithm: dsrl_sac
 
 seed: 1
 device: cuda:0
@@ -23,6 +23,7 @@ cond_steps: 1
 act_steps: 4 
 load_offline_data: False
 deterministic_eval: False
+checkpoint_path: /mnt/ssd1/data/wys/dppo/log/robomimic-dsrl/${name}/${now:%Y-%m-%d}_${now:%H-%M-%S}_${seed}
 
 eval_interval: 3000
 num_evals: 200
@@ -73,6 +74,8 @@ train:
   action_magnitude: 1.5 # Maximum action magnitude in noise action space
   n_critics: 2 # Number of critic Q networks
   critic_backup_combine_type: min
+  res_coef: 0.01 # residual coef for SAC actor
+  learning_starts: 600 # Number of steps before training starts
 
 model:
   _target_: model.diffusion.diffusion_eval.DiffusionEval

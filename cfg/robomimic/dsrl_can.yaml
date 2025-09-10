@@ -54,7 +54,7 @@ env:
       reset_within_step: True
 
 wandb:
-  project: dsrl
+  project: dsrl_2td
   run: ${now:%H-%M-%S}_${name}
   group: robomimic-can
 
@@ -62,7 +62,7 @@ train:
   tau: 0.005 # Target update rate
   actor_lr: 3e-4
   batch_size: 256
-  train_freq: 1 # Update model after this many environment steps
+  train_freq: 2 # Update model after this many environment steps
   utd: 20 # Number of gradient steps to take per update
   noise_critic_grad_steps: 10 # Number of gradient steps to take per update when fitting noise critic 
   use_layer_norm: True
@@ -75,6 +75,8 @@ train:
   action_magnitude: 1.5 # Maximum action magnitude in noise action space
   n_critics: 2 # Number of critic Q networks
   critic_backup_combine_type: min
+  res_coef: 0.01 # residual coef for SAC actor
+  learning_starts: 300 # Number of steps before training starts
 
 model:
   _target_: model.diffusion.diffusion_eval.DiffusionEval

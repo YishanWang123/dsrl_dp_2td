@@ -212,6 +212,7 @@ class DiffusionPolicyEnvWrapper(VecEnvWrapper):
 		self.obs = None
 		#residual getter
 		self.residual_getter = None
+		self._step_count = 0
 		
 	def set_residual_getter(self, fn):
 
@@ -235,6 +236,7 @@ class DiffusionPolicyEnvWrapper(VecEnvWrapper):
 		# DP(noise) -> norm
 		norm_action = self.base_policy(self.obs, noise) # num_env * H * A
 		if self.residual_getter is not None:
+
 			# print("using residual")
 			with torch.no_grad():
 				res = self.residual_getter(self.obs)  # torch[B,H,A]
@@ -246,6 +248,7 @@ class DiffusionPolicyEnvWrapper(VecEnvWrapper):
                     )
 		else:
 			res = torch.zeros_like(noise)
+		
 		# print(f"norm_action shape:{norm_action.shape},norm_action dtype:{norm_action.dtype} ,res shape:{res.shape} ")
 		# import pdb; pdb.set_trace()
 		if isinstance(res, torch.Tensor):
@@ -253,8 +256,15 @@ class DiffusionPolicyEnvWrapper(VecEnvWrapper):
 		else:
 			res = np.asarray(res)
 		res = res.astype(np.float32, copy=False)
-
+		# print(type(norm_action))
+		# import pdb; pdb.set_trace()
 		actual_norm_action = norm_action + res #res_coef TBD
+		#打印信息
+		self._step_count += 1
+		if self._step_count % 100 == 0:
+			print(f"step {self._step_count}: norm_action mean {norm_action.mean().item():.4f}, res mean {res.mean().item():.4f}, actual_norm_action mean {actual_norm_action.mean().item():.4f}")
+		# print(f"norm_action :{norm_action.mean().item()}, res:{res.mean().item()},actual_norm_action :{actual_norm_action.mean().item()}")
+		# actual_norm_action = norm_action + res #res_coef TBD
 
 		#store for add buffer
 		self._curr_norm_action = norm_action
