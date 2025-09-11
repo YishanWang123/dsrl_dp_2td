@@ -169,7 +169,20 @@ class LoggingCallback(BaseCallback):
 	def set_timesteps(self, timesteps):
 		self.total_timesteps = timesteps
 
-
+class ResidualProbCallback(BaseCallback):
+	def __init__(self, warmup_steps, res_H, verbose=0):
+		super().__init__(verbose)
+		self.warmup_steps = warmup_steps
+		self.res_H = res_H
+	
+	def _on_step(self) -> bool:
+		print(f"num timesteps: {self.model.num_timesteps}")
+		if self.model.num_timesteps > self.warmup_steps:
+			self.model.res_prob = min(1.0, 
+									(self.model.num_timesteps - self.warmup_steps)/self.res_H)
+		else:
+			self.model.res_prob = 0.0
+		return True
 
 def collect_rollouts(model, env, num_steps, base_policy, cfg):
 	obs = env.reset()

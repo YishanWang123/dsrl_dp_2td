@@ -27,7 +27,7 @@ deterministic_eval: False # if true, run eval with both deterministic actions, a
 checkpoint_path: /mnt/ssd1/data/wys/dppo/log/robomimic-dsrl/${name}/${now:%Y-%m-%d}_${now:%H-%M-%S}_${seed}
 
 eval_interval: 3000
-num_evals: 200
+num_evals: 25
 save_model_interval: 10000
 save_replay_buffer: False
 
@@ -77,6 +77,8 @@ train:
   critic_backup_combine_type: min
   res_coef: 0.01 # residual coef for SAC actor
   learning_starts: 300 # Number of steps before training starts
+  warmup_steps: 200 # Number of steps to warm up actor and critic networks
+  res_H : 10000 # Number of time steps to predict in residual network
 
 model:
   _target_: model.diffusion.diffusion_eval.DiffusionEval

@@ -97,7 +97,7 @@ run_task() {
     env_name="$task" \
     base_policy_path="$BASE_POLICY_PATH" \
     normalization_path="$NORMALIZATION_PATH" \
-    use_wandb=True
+    use_wandb=False
 }
 
 # ========== 顺序 or 并行调度 ==========

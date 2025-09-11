@@ -18,7 +18,7 @@ from stable_baselines3.common.callbacks import CheckpointCallback, BaseCallback
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import SubprocVecEnv, DummyVecEnv
 from env_utils import DiffusionPolicyEnvWrapper, ObservationWrapperRobomimic, ObservationWrapperGym, ActionChunkWrapper, make_robomimic_env
-from utils import load_base_policy, load_offline_data, collect_rollouts, LoggingCallback
+from utils import load_base_policy, load_offline_data, collect_rollouts, LoggingCallback, ResidualProbCallback
 
 OmegaConf.register_new_resolver("eval", eval, replace=True)
 OmegaConf.register_new_resolver("round_up", math.ceil)
@@ -176,7 +176,9 @@ def main(cfg: OmegaConf):
 		collect_rollouts(model, env, cfg.train.init_rollout_steps, base_policy, cfg)	
 		logging_callback.set_timesteps(cfg.train.init_rollout_steps * num_env)
 
-	callbacks = [checkpoint_callback, logging_callback]
+	res_callback = ResidualProbCallback(warmup_steps=cfg.train.warmup_steps, res_H=cfg.train.res_H)
+	
+	callbacks = [checkpoint_callback, logging_callback, res_callback]
 	# Train the agent
 	model.learn(
 		total_timesteps=20000000,
