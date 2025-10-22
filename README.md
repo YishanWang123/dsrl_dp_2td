@@ -1,12 +1,8 @@
+> 🔧 **My Extension:**  
+> This repository includes my extended implementation **DSRL (PyTorch) + Residual Guidance**,  
+> which introduces a residual-guidance in clean action space to further improve diffusion policy steering efficiency and stability.
+
 <div align="center">
----
-
-### 🔧 My Extension
-
-This repository includes my extended implementation **DSRL (PyTorch) + Residual Guidance**,  
-which introduces a residual-guidance in clean action space to further improve diffusion policy steering efficiency and stability.
-
----
 
 # Steering Your Diffusion Policy with Latent Space Reinforcement Learning (DSRL)
 
