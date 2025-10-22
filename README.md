@@ -6,6 +6,14 @@
 
 </div>
 
+---
+
+### 🔧 My Extension
+
+This repository includes my extended implementation **DSRL (PyTorch) + Residual Guidance**,  
+which introduces a residual-guided noise correction mechanism to further improve diffusion policy steering efficiency and stability.
+
+---
 
 <p align="center">
   <a href="https://colinqiyangli.github.io/qc/">
