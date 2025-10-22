@@ -1,11 +1,4 @@
 <div align="center">
-
-# Steering Your Diffusion Policy with Latent Space Reinforcement Learning (DSRL)
-
-## [[website](https://diffusion-steering.github.io)]      [[pdf](https://arxiv.org/pdf/2506.15799)]
-
-</div>
-
 ---
 
 ### 🔧 My Extension
@@ -14,6 +7,14 @@ This repository includes my extended implementation **DSRL (PyTorch) + Residual 
 which introduces a residual-guidance in clean action space to further improve diffusion policy steering efficiency and stability.
 
 ---
+
+# Steering Your Diffusion Policy with Latent Space Reinforcement Learning (DSRL)
+
+## [[website](https://diffusion-steering.github.io)]      [[pdf](https://arxiv.org/pdf/2506.15799)]
+
+</div>
+
+
 
 <p align="center">
   <a href="https://colinqiyangli.github.io/qc/">
