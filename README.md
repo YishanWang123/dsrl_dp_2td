@@ -11,7 +11,7 @@
 ### 🔧 My Extension
 
 This repository includes my extended implementation **DSRL (PyTorch) + Residual Guidance**,  
-which introduces a residual-guided noise correction mechanism to further improve diffusion policy steering efficiency and stability.
+which introduces a residual-guidance in clean action space to further improve diffusion policy steering efficiency and stability.
 
 ---
 
